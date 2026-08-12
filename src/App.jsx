@@ -165,7 +165,7 @@ function App() {
           {loading ? (
             <div className="loader">Loading fresh fruits...</div>
           ) : fruits.length === 0 ? (
-            <div className="empty-state"> HIIIIIIIIIIIIIII-No fruits in inventory. Add some on the left!</div>
+            <div className="empty-state"> HIIIIIIIIIIIIIII Halloo-No fruits in inventory. Add some on the left!</div>
           ) : (
             <div className="fruit-grid">
               {fruits.map((fruit) => (

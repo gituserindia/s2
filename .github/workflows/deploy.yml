@@ -28,33 +28,33 @@ jobs:
       - name: Deploy Production Files to CloudPanel Root
         run: |
           # Ensure destination folder exists
-          mkdir -p /home/divija-s1/htdocs/s2.divija.space
+          mkdir -p /home/divija-s2/htdocs/s2.divija.space
 
           # Sync only production assets
-          rsync -av --delete dist/ /home/divija-s1/htdocs/s2.divija.space/dist/
-          rsync -av --delete server/ /home/divija-s1/htdocs/s2.divija.space/server/
-          cp package.json package-lock.json ecosystem.config.cjs /home/divija-s1/htdocs/s2.divija.space/
+          rsync -av --delete dist/ /home/divija-s2/htdocs/s2.divija.space/dist/
+          rsync -av --delete server/ /home/divija-s2/htdocs/s2.divija.space/server/
+          cp package.json package-lock.json ecosystem.config.cjs /home/divija-s2/htdocs/s2.divija.space/
 
           # Copy server env credentials if present (update this path if your s2 env is elsewhere)
-          if [ -f /home/divija-s1/repo-s2-base/server/.env ]; then
-            cp /home/divija-s1/repo-s2-base/server/.env /home/divija-s1/htdocs/s2.divija.space/server/.env
+          if [ -f /home/divija-s2/repo-s2-base/server/.env ]; then
+            cp /home/divija-s2/repo-s2-base/server/.env /home/divija-s2/htdocs/s2.divija.space/server/.env
           fi
 
           # Clean up any leftover raw source files from htdocs
-          rm -rf /home/divija-s1/htdocs/s2.divija.space/src \
-                 /home/divija-s1/htdocs/s2.divija.space/public \
-                 /home/divija-s1/htdocs/s2.divija.space/.git \
-                 /home/divija-s1/htdocs/s2.divija.space/.github \
-                 /home/divija-s1/htdocs/s2.divija.space/tsconfig*.json \
-                 /home/divija-s1/htdocs/s2.divija.space/vite.config.ts \
-                 /home/divija-s1/htdocs/s2.divija.space/index.html \
-                 /home/divija-s1/htdocs/s2.divija.space/README.md
+          rm -rf /home/divija-s2/htdocs/s2.divija.space/src \
+                 /home/divija-s2/htdocs/s2.divija.space/public \
+                 /home/divija-s2/htdocs/s2.divija.space/.git \
+                 /home/divija-s2/htdocs/s2.divija.space/.github \
+                 /home/divija-s2/htdocs/s2.divija.space/tsconfig*.json \
+                 /home/divija-s2/htdocs/s2.divija.space/vite.config.ts \
+                 /home/divija-s2/htdocs/s2.divija.space/index.html \
+                 /home/divija-s2/htdocs/s2.divija.space/README.md
 
       - name: Reload Node Backend API (PM2)
         run: |
-          cd /home/divija-s1/htdocs/s2.divija.space
+          cd /home/divija-s2/htdocs/s2.divija.space
           npx pm2 reload ecosystem.config.cjs || npx pm2 start ecosystem.config.cjs
 
       - name: Deployment Status Summary
         run: |
-          echo "✅ Production deployment completed successfully to /home/divija-s1/htdocs/s2.divija.space at $(date)"
+          echo "✅ Production deployment completed successfully to /home/divija-s2/htdocs/s2.divija.space at $(date)"

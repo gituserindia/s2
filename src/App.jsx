@@ -5,7 +5,7 @@ const API_URL = 'http://localhost:3001/api/fruits';
 
 function App() {
   const [fruits, setFruits] = useState([]);
-  const [formData, setFormData] = useState({ name: '', quantity: 0, color: '' });
+  const [formData, setFormData] = useState({ name: '', quantity: 0, color: '', image_url: '' });
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -57,19 +57,24 @@ function App() {
         const newFruit = await response.json();
         setFruits([...fruits, newFruit]);
       }
-      setFormData({ name: '', quantity: 0, color: '' });
+      setFormData({ name: '', quantity: 0, color: '', image_url: '' });
     } catch (error) {
       console.error('Error saving fruit:', error);
     }
   };
 
   const handleEdit = (fruit) => {
-    setFormData({ name: fruit.name, quantity: fruit.quantity, color: fruit.color || '' });
+    setFormData({
+      name: fruit.name,
+      quantity: fruit.quantity,
+      color: fruit.color || '',
+      image_url: fruit.image_url || ''
+    });
     setEditingId(fruit.id);
   };
 
   const handleCancelEdit = () => {
-    setFormData({ name: '', quantity: 0, color: '' });
+    setFormData({ name: '', quantity: 0, color: '', image_url: '' });
     setEditingId(null);
   };
 
@@ -88,7 +93,7 @@ function App() {
   return (
     <div className="app-container">
       <header className="hero">
-        <h1>Fruit Inventory Manager</h1>
+        <h1>Fruit Inventory Gallery</h1>
         <p>A fresh and dynamic way to track your delicious produce.</p>
       </header>
 
@@ -131,6 +136,17 @@ function App() {
                 placeholder="e.g. Red"
               />
             </div>
+            <div className="input-group">
+              <label htmlFor="image_url">Image URL</label>
+              <input
+                type="url"
+                id="image_url"
+                name="image_url"
+                value={formData.image_url}
+                onChange={handleInputChange}
+                placeholder="https://example.com/apple.jpg"
+              />
+            </div>
             <div className="form-actions">
               <button type="submit" className="btn btn-primary">
                 {editingId ? 'Update Fruit' : 'Add Fruit'}
@@ -144,51 +160,51 @@ function App() {
           </form>
         </section>
 
-        <section className="table-section">
+        <section className="gallery-section">
           <h2>Current Inventory</h2>
           {loading ? (
             <div className="loader">Loading fresh fruits...</div>
+          ) : fruits.length === 0 ? (
+            <div className="empty-state"> HIIIIIIIIIIIIIII-No fruits in inventory. Add some on the left!</div>
           ) : (
-            <div className="table-wrapper">
-              <table className="fruits-table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Color</th>
-                    <th>Quantity</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {fruits.length === 0 ? (
-                    <tr>
-                      <td colSpan="5" className="empty-state">No fruits in inventory. Add some above!</td>
-                    </tr>
-                  ) : (
-                    fruits.map((fruit) => (
-                      <tr key={fruit.id}>
-                        <td>#{fruit.id}</td>
-                        <td className="font-semibold">{fruit.name}</td>
-                        <td>
-                          <span className="color-badge" style={{ backgroundColor: fruit.color || '#ccc' }}>
-                            {fruit.color || 'None'}
-                          </span>
-                        </td>
-                        <td>{fruit.quantity}</td>
-                        <td className="actions-cell">
-                          <button className="btn btn-icon edit" onClick={() => handleEdit(fruit)}>
-                            Edit
-                          </button>
-                          <button className="btn btn-icon delete" onClick={() => handleDelete(fruit.id)}>
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+            <div className="fruit-grid">
+              {fruits.map((fruit) => (
+                <div key={fruit.id} className="fruit-card">
+                  <div className="fruit-image-container">
+                    {fruit.image_url ? (
+                      <img src={fruit.image_url} alt={fruit.name} className="fruit-image" />
+                    ) : (
+                      <div className="fruit-image-placeholder">
+                        <span>No Image</span>
+                      </div>
+                    )}
+                    <span className="color-badge" style={{ backgroundColor: fruit.color || '#ccc' }}>
+                      {fruit.color || 'None'}
+                    </span>
+                  </div>
+
+                  <div className="fruit-details">
+                    <div className="fruit-header">
+                      <h3>{fruit.name}</h3>
+                      <span className="fruit-id">#{fruit.id}</span>
+                    </div>
+                    <div className="fruit-meta">
+                      <span className="quantity">
+                        <strong>{fruit.quantity}</strong> in stock
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="fruit-actions">
+                    <button className="btn btn-icon edit" onClick={() => handleEdit(fruit)}>
+                      Edit
+                    </button>
+                    <button className="btn btn-icon delete" onClick={() => handleDelete(fruit.id)}>
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
         </section>

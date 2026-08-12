@@ -34,6 +34,15 @@ async function initDb() {
         color VARCHAR(50)
       )
     `);
+    
+    // Attempt to add the new image_url column if it doesn't exist
+    try {
+      await connection.query(`ALTER TABLE fruits ADD COLUMN image_url VARCHAR(1024)`);
+      console.log('Added image_url column to fruits table.');
+    } catch (e) {
+      // Column likely already exists
+    }
+
     console.log('Fruits table initialized.');
     connection.release();
   } catch (err) {
@@ -46,12 +55,12 @@ initDb();
 // CREATE: Add a new fruit
 app.post('/api/fruits', async (req, res) => {
   try {
-    const { name, quantity, color } = req.body;
+    const { name, quantity, color, image_url } = req.body;
     const [result] = await pool.query(
-      'INSERT INTO fruits (name, quantity, color) VALUES (?, ?, ?)',
-      [name, quantity, color]
+      'INSERT INTO fruits (name, quantity, color, image_url) VALUES (?, ?, ?, ?)',
+      [name, quantity, color, image_url]
     );
-    res.status(201).json({ id: result.insertId, name, quantity, color });
+    res.status(201).json({ id: result.insertId, name, quantity, color, image_url });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to create fruit' });
@@ -73,12 +82,12 @@ app.get('/api/fruits', async (req, res) => {
 app.put('/api/fruits/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, quantity, color } = req.body;
+    const { name, quantity, color, image_url } = req.body;
     await pool.query(
-      'UPDATE fruits SET name = ?, quantity = ?, color = ? WHERE id = ?',
-      [name, quantity, color, id]
+      'UPDATE fruits SET name = ?, quantity = ?, color = ?, image_url = ? WHERE id = ?',
+      [name, quantity, color, image_url, id]
     );
-    res.json({ id: Number(id), name, quantity, color });
+    res.json({ id: Number(id), name, quantity, color, image_url });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to update fruit' });
